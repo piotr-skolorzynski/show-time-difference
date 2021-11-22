@@ -2,15 +2,34 @@ import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 
 const Timer = ({ lastSeen }) => {
-  const [elapsedTime, setElapsedTime] = useState('');
+  const [elapsedTime, setElapsedTime] = useState("");
 
   useEffect(() => {
-    setInterval(() => {
-      const now = new Date();
-      const timestamp = Math.round(now.getTime() / 1000);
-      const difference = timestamp - lastSeen;
-      setElapsedTime(difference);
-    }, 1000);
+    const now = new Date();
+    const timestamp = Math.round(now.getTime() / 1000);
+    let difference = timestamp - lastSeen;
+    setElapsedTime(difference);
+    let interval;
+    let delay;
+    if (difference < 60) {
+      delay = (60 - difference) * 1000;
+      interval = setInterval(() => {
+        difference += 1;
+        setElapsedTime(difference);
+      }, 1000);
+      setTimeout(() => {
+        clearInterval(interval);
+        setInterval(() => {
+          difference += 60;
+          setElapsedTime(difference);
+        }, 60000);
+      }, delay);
+    } else {
+      setInterval(() => {
+        difference += 60;
+        setElapsedTime(difference);
+      }, 60000);
+    }
   }, [lastSeen]);
 
   return (
